@@ -3,10 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- タイトルを修正 -->
     <title>Salesforce突発入力フォーム</title>
     
-    <!-- カレンダー・時計表示用の外部機能（Flatpickr）を読み込み -->
+    <!-- カレンダー・時計表示用の外部機能（Flatpickr） -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
@@ -31,13 +30,12 @@
             text-align: center;
             color: #005fb2;
             font-size: 1.5em;
-            margin-bottom: 5px; /* 注意書きとの隙間を調整 */
+            margin-bottom: 5px;
         }
-        /* 追加：注意書きのスタイル */
         .warning-text {
             text-align: center;
-            color: #d93025; /* 赤色 */
-            font-size: 0.9em; /* タイトルより少し小さく */
+            color: #d93025;
+            font-size: 0.9em;
             margin-top: 0;
             margin-bottom: 20px;
         }
@@ -104,31 +102,43 @@
             resize: vertical;
             min-height: 80px;
         }
+        
+        /* ボタンエリアのスタイル（縦並びに変更） */
         .btn-container {
-            text-align: center;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
             margin-top: 30px;
         }
         button {
-            background-color: #005fb2;
-            color: white;
             border: none;
             padding: 15px 30px;
             font-size: 18px; 
+            font-weight: bold;
             border-radius: 5px;
             cursor: pointer;
             width: 100%; 
             max-width: 400px;
             transition: background 0.3s;
         }
-        button:hover {
-            background-color: #004a8c;
+        .btn-mail {
+            background-color: #005fb2;
+            color: white;
         }
+        .btn-mail:hover { background-color: #004a8c; }
+        
+        .btn-copy {
+            background-color: #28a745; /* 緑色で目立たせる */
+            color: white;
+        }
+        .btn-copy:hover { background-color: #218838; }
+
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- タイトルと注意書き -->
     <h2>Salesforce突発入力フォーム</h2>
     <p class="warning-text">※更新すると内容がリセットされます</p>
 
@@ -178,12 +188,10 @@
                 <input type="text" id="category" value="修理・点検" readonly>
             </div>
             <div class="form-group">
-                <!-- 項目名修正 -->
                 <label for="details">⑧問合せ内容（ブランクでも可）</label>
                 <textarea id="details" placeholder="問合せ内容を入力"></textarea>
             </div>
             <div class="form-group">
-                <!-- 項目名修正 -->
                 <label for="account">⑨取引先（設置先）</label>
                 <input type="text" id="account" placeholder="取引先を入力">
             </div>
@@ -203,7 +211,6 @@
                 </div>
             </div>
             <div class="form-group">
-                <!-- 項目名修正 -->
                 <label for="equip_info">⑬機器情報（号機など）</label>
                 <input type="text" id="equip_info" placeholder="機器情報を入力">
             </div>
@@ -244,83 +251,13 @@
             </div>
         </fieldset>
 
+        <!-- 2つのボタンを設置 -->
         <div class="btn-container">
-            <button type="button" onclick="generateMail()">メールを起動して送信準備</button>
+            <button type="button" class="btn-mail" onclick="generateMail()">メールを起動する</button>
+            <button type="button" class="btn-copy" onclick="copyToClipboard()">テキストをコピーする（確実）</button>
         </div>
     </form>
 </div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        flatpickr(".date-picker", {
-            locale: "ja",
-            dateFormat: "Y/m/d",
-            allowInput: true
-        });
-
-        flatpickr(".time-picker", {
-            enableTime: true,
-            noCalendar: true,
-            dateFormat: "H:i",
-            time_24hr: true,
-            allowInput: true
-        });
-    });
-
-    function generateMail() {
-        const v = (id) => document.getElementById(id).value;
-        
-        const formatDateTime = (dateId, timeId) => {
-            const d = v(dateId);
-            const t = v(timeId);
-            if (d && t) return `${d} ${t}`;
-            if (d) return d;
-            if (t) return t;
-            return "";
-        };
-
-        const failure_dt = formatDateTime('failure_date_d', 'failure_date_t');
-        const visit_dt = formatDateTime('visit_date_d', 'visit_date_t');
-        
-        // メールの本文（テキスト化時の項目名も修正）
-        let mailBody = "【顧客選択】\r\n";
-        mailBody += `①顧客名: ${v('customer_name')}\r\n\r\n`;
-        
-        mailBody += "【ケース】\r\n";
-        mailBody += `②件名: ${v('subject')}\r\n`;
-        mailBody += `③発生源: ${v('source')}\r\n`;
-        mailBody += `④受付商材: ${v('product')}\r\n`;
-        mailBody += `⑤受付対応者: ${v('agent')}\r\n`;
-        mailBody += `⑥故障発生日、時間: ${failure_dt}\r\n`;
-        mailBody += `⑦問合せ分類: ${v('category')}\r\n`;
-        mailBody += `⑧問合せ内容（ブランクでも可）:\r\n${v('details')}\r\n`;
-        mailBody += `⑨取引先（設置先）: ${v('account')}\r\n`;
-        mailBody += `⑩対応内容: ${v('response_action')}\r\n`;
-        mailBody += `⑪引継ぎ先: ${v('handover')}\r\n`;
-        mailBody += `⑫訪問希望日、時間: ${visit_dt}\r\n`;
-        mailBody += `⑬機器情報（号機など）: ${v('equip_info')}\r\n\r\n`;
-        
-        mailBody += "【作業指示】\r\n";
-        mailBody += `⑭サービステリトリー: ${v('territory')}\r\n`;
-        mailBody += `⑮業務内容コード: ${v('work_code')}\r\n`;
-        mailBody += `⑯突発か計画か・・・: ${v('sudden_planned')}\r\n`;
-        mailBody += `⑰どの機器か・・・: ${v('which_equip')}\r\n`;
-        mailBody += `⑱作業指示: ${v('work_order')}\r\n`;
-        mailBody += `⑲メンテ担当者: ${v('maintenance_person')}\r\n`;
-
-        // 件名も変更しています
-        const encodedSubject = encodeURIComponent('Salesforce突発入力データ');
-        const encodedBody = encodeURIComponent(mailBody);
-        const mailtoLink = `mailto:?subject=${encodedSubject}&body=${encodedBody}`;
-        
-        // iPhone/Safari対策
-        const link = document.createElement('a');
-        link.href = mailtoLink;
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    }
-</script>
-
-</body>
-</html>
