@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>報告メール作成フォーム</title>
+<style>
+    body {
+        font-family: sans-serif;
+        padding: 20px;
+        background-color: #f9f9f9;
+    }
+    .form-container {
+        background-color: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+        color: #333;
+    }
+    input, textarea {
+        width: 100%;
+        padding: 10px;
+        margin-bottom: 15px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        box-sizing: border-box;
+    }
+    .submit-button {
+        width: 100%;
+        padding: 15px;
+        background-color: #28a745; /* 押しやすいように緑色に変更しました */
+        color: white;
+        border: none;
+        border-radius: 4px;
+        font-size: 18px;
+        cursor: pointer;
+        font-weight: bold;
+    }
+    .submit-button:hover {
+        background-color: #218838;
+    }
+</style>
+</head>
+<body>
+
+<div class="form-container">
+    <h2>報告メール作成</h2>
+    
+    <label for="subject">① 件名</label>
+    <input type="text" id="subject" placeholder="例：〇〇に関するご報告">
+
+    <label for="occurrence_date">② 発生日</label>
+    <input type="date" id="occurrence_date">
+
+    <label for="contractor">③ 委託先</label>
+    <input type="text" id="contractor" placeholder="例：株式会社〇〇">
+
+    <label for="details">④ 詳細・備考（任意）</label>
+    <textarea id="details" rows="5" placeholder="補足事項があれば入力してください..."></textarea>
+
+    <!-- 一番下に配置した「メール送付」ボタン -->
+    <button class="submit-button" onclick="createMail()">メール送付</button>
+</div>
+
+<script>
+    function createMail() {
+        // 1. フォームの値を取得
+        const subject = document.getElementById('subject').value;
+        const occurrenceDate = document.getElementById('occurrence_date').value;
+        const contractor = document.getElementById('contractor').value;
+        const details = document.getElementById('details').value;
+
+        // 2. メールの本文を組み立てる
+        let mailBody = `【発生日】\n${occurrenceDate}\n\n`;
+        mailBody += `【委託先】\n${contractor}\n\n`;
+        
+        if (details) {
+            mailBody += `【詳細・備考】\n${details}\n`;
+        }
+
+        // 3. 文字化け防止のためにエンコード
+        const encodedSubject = encodeURIComponent(subject);
+        const encodedBody = encodeURIComponent(mailBody);
+
+        // 4. 送付先はブランク（mailto: の後ろを空欄）でメールアプリを起動
+        const mailtoLink = `mailto:?subject=${encodedSubject}&body=${encodedBody}`;
+        window.location.href = mailtoLink;
+    }
+</script>
+
+</body>
+</html>
