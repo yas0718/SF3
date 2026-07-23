@@ -294,4 +294,33 @@
         mailBody += `⑥故障発生日、時間: ${failure_dt}\r\n`;
         mailBody += `⑦問合せ分類: ${v('category')}\r\n`;
         mailBody += `⑧問合せ内容（ブランクでも可）:\r\n${v('details')}\r\n`;
-        mailBody += `⑨取引先（設置先）: ${v(
+        mailBody += `⑨取引先（設置先）: ${v('account')}\r\n`;
+        mailBody += `⑩対応内容: ${v('response_action')}\r\n`;
+        mailBody += `⑪引継ぎ先: ${v('handover')}\r\n`;
+        mailBody += `⑫訪問希望日、時間: ${visit_dt}\r\n`;
+        mailBody += `⑬機器情報（号機など）: ${v('equip_info')}\r\n\r\n`;
+        
+        mailBody += "【作業指示】\r\n";
+        mailBody += `⑭サービステリトリー: ${v('territory')}\r\n`;
+        mailBody += `⑮業務内容コード: ${v('work_code')}\r\n`;
+        mailBody += `⑯突発か計画か・・・: ${v('sudden_planned')}\r\n`;
+        mailBody += `⑰どの機器か・・・: ${v('which_equip')}\r\n`;
+        mailBody += `⑱作業指示: ${v('work_order')}\r\n`;
+        mailBody += `⑲メンテ担当者: ${v('maintenance_person')}\r\n`;
+
+        // 件名も変更しています
+        const encodedSubject = encodeURIComponent('Salesforce突発入力データ');
+        const encodedBody = encodeURIComponent(mailBody);
+        const mailtoLink = `mailto:?subject=${encodedSubject}&body=${encodedBody}`;
+        
+        // iPhone/Safari対策
+        const link = document.createElement('a');
+        link.href = mailtoLink;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+</script>
+
+</body>
+</html>
