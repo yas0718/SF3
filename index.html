@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Salesforce 入力フォーム（※更新するとリセットされます）</title>
+    <!-- タイトルを修正 -->
+    <title>Salesforce突発入力フォーム</title>
     
     <!-- カレンダー・時計表示用の外部機能（Flatpickr）を読み込み -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -30,6 +31,15 @@
             text-align: center;
             color: #005fb2;
             font-size: 1.5em;
+            margin-bottom: 5px; /* 注意書きとの隙間を調整 */
+        }
+        /* 追加：注意書きのスタイル */
+        .warning-text {
+            text-align: center;
+            color: #d93025; /* 赤色 */
+            font-size: 0.9em; /* タイトルより少し小さく */
+            margin-top: 0;
+            margin-bottom: 20px;
         }
         fieldset {
             border: 1px solid #cce0ff;
@@ -118,7 +128,9 @@
 <body>
 
 <div class="container">
-    <h2>Salesforce 入力フォーム</h2>
+    <!-- タイトルと注意書き -->
+    <h2>Salesforce突発入力フォーム</h2>
+    <p class="warning-text">※更新すると内容がリセットされます</p>
 
     <form id="sfForm">
         <!-- 顧客選択 -->
@@ -166,10 +178,12 @@
                 <input type="text" id="category" value="修理・点検" readonly>
             </div>
             <div class="form-group">
+                <!-- 項目名修正 -->
                 <label for="details">⑧問合せ内容（ブランクでも可）</label>
                 <textarea id="details" placeholder="問合せ内容を入力"></textarea>
             </div>
             <div class="form-group">
+                <!-- 項目名修正 -->
                 <label for="account">⑨取引先（設置先）</label>
                 <input type="text" id="account" placeholder="取引先を入力">
             </div>
@@ -184,4 +198,100 @@
             <div class="form-group">
                 <label>⑫訪問希望日、時間</label>
                 <div class="datetime-wrapper">
-                    <input type="text" id="visit_date_d" class="date-picker" placeholder="日付を選択" read
+                    <input type="text" id="visit_date_d" class="date-picker" placeholder="日付を選択" readonly>
+                    <input type="text" id="visit_date_t" class="time-picker" placeholder="時間を選択" readonly>
+                </div>
+            </div>
+            <div class="form-group">
+                <!-- 項目名修正 -->
+                <label for="equip_info">⑬機器情報（号機など）</label>
+                <input type="text" id="equip_info" placeholder="機器情報を入力">
+            </div>
+        </fieldset>
+
+        <!-- 作業指示 -->
+        <fieldset>
+            <legend>作業指示</legend>
+            <div class="form-group">
+                <label for="territory">⑭サービステリトリー</label>
+                <select id="territory">
+                    <option value="">選択してください</option>
+                    <option value="CGS2T　兵庫">CGS2T　兵庫</option>
+                    <option value="鴻池運輸　兵庫">鴻池運輸　兵庫</option>
+                    <option value="OGFA　CGS2T兵庫">OGFA　CGS2T兵庫</option>
+                    <option value="OGFA　CGS1T大阪">OGFA　CGS1T大阪</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="work_code">⑮業務内容コード</label>
+                <input type="text" id="work_code" value="01:故障対応" readonly>
+            </div>
+            <div class="form-group">
+                <label for="sudden_planned">⑯突発か計画か・・・</label>
+                <input type="text" id="sudden_planned" value="突発" readonly>
+            </div>
+            <div class="form-group">
+                <label for="which_equip">⑰どの機器か・・・</label>
+                <input type="text" id="which_equip" value="CGS" readonly>
+            </div>
+            <div class="form-group">
+                <label for="work_order">⑱作業指示</label>
+                <input type="text" id="work_order" value="CGS）突発メンテナンス" readonly>
+            </div>
+            <div class="form-group">
+                <label for="maintenance_person">⑲メンテ担当者</label>
+                <input type="text" id="maintenance_person" placeholder="メンテ担当者を入力">
+            </div>
+        </fieldset>
+
+        <div class="btn-container">
+            <button type="button" onclick="generateMail()">メールを起動して送信準備</button>
+        </div>
+    </form>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr(".date-picker", {
+            locale: "ja",
+            dateFormat: "Y/m/d",
+            allowInput: true
+        });
+
+        flatpickr(".time-picker", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: true,
+            allowInput: true
+        });
+    });
+
+    function generateMail() {
+        const v = (id) => document.getElementById(id).value;
+        
+        const formatDateTime = (dateId, timeId) => {
+            const d = v(dateId);
+            const t = v(timeId);
+            if (d && t) return `${d} ${t}`;
+            if (d) return d;
+            if (t) return t;
+            return "";
+        };
+
+        const failure_dt = formatDateTime('failure_date_d', 'failure_date_t');
+        const visit_dt = formatDateTime('visit_date_d', 'visit_date_t');
+        
+        // メールの本文（テキスト化時の項目名も修正）
+        let mailBody = "【顧客選択】\r\n";
+        mailBody += `①顧客名: ${v('customer_name')}\r\n\r\n`;
+        
+        mailBody += "【ケース】\r\n";
+        mailBody += `②件名: ${v('subject')}\r\n`;
+        mailBody += `③発生源: ${v('source')}\r\n`;
+        mailBody += `④受付商材: ${v('product')}\r\n`;
+        mailBody += `⑤受付対応者: ${v('agent')}\r\n`;
+        mailBody += `⑥故障発生日、時間: ${failure_dt}\r\n`;
+        mailBody += `⑦問合せ分類: ${v('category')}\r\n`;
+        mailBody += `⑧問合せ内容（ブランクでも可）:\r\n${v('details')}\r\n`;
+        mailBody += `⑨取引先（設置先）: ${v(
