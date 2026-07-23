@@ -1,94 +1,260 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>報告メール作成フォーム</title>
-<style>
-    body {
-        font-family: sans-serif;
-        padding: 20px;
-        background-color: #f9f9f9;
-    }
-    .form-container {
-        background-color: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    }
-    label {
-        display: block;
-        margin-bottom: 5px;
-        font-weight: bold;
-        color: #333;
-    }
-    input, textarea {
-        width: 100%;
-        padding: 10px;
-        margin-bottom: 15px;
-        border: 1px solid #ccc;
-        border-radius: 4px;
-        box-sizing: border-box;
-    }
-    .submit-button {
-        width: 100%;
-        padding: 15px;
-        background-color: #28a745; /* 押しやすいように緑色に変更しました */
-        color: white;
-        border: none;
-        border-radius: 4px;
-        font-size: 18px;
-        cursor: pointer;
-        font-weight: bold;
-    }
-    .submit-button:hover {
-        background-color: #218838;
-    }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Salesforce 入力フォーム</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h2 {
+            text-align: center;
+            color: #005fb2;
+        }
+        fieldset {
+            border: 1px solid #cce0ff;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #fafcff;
+        }
+        legend {
+            font-weight: bold;
+            color: #005fb2;
+            background: #e6f0ff;
+            padding: 5px 15px;
+            border-radius: 3px;
+            border: 1px solid #cce0ff;
+        }
+        .form-group {
+            display: flex;
+            margin-bottom: 15px;
+            align-items: center;
+        }
+        .form-group label {
+            flex: 0 0 200px;
+            font-weight: bold;
+        }
+        .form-group input[type="text"],
+        .form-group input[type="datetime-local"],
+        .form-group select,
+        .form-group textarea {
+            flex: 1;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        button {
+            background-color: #005fb2;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #004a8c;
+        }
+    </style>
 </head>
 <body>
 
-<div class="form-container">
-    <h2>報告メール作成</h2>
-    
-    <label for="subject">① 件名</label>
-    <input type="text" id="subject" placeholder="例：〇〇に関するご報告">
+<div class="container">
+    <h2>Salesforce 入力フォーム</h2>
 
-    <label for="occurrence_date">② 発生日</label>
-    <input type="date" id="occurrence_date">
+    <form id="sfForm">
+        <!-- 顧客選択 -->
+        <fieldset>
+            <legend>顧客選択</legend>
+            <div class="form-group">
+                <label for="customer_name">①顧客名</label>
+                <input type="text" id="customer_name" placeholder="顧客名を入力">
+            </div>
+        </fieldset>
 
-    <label for="contractor">③ 委託先</label>
-    <input type="text" id="contractor" placeholder="例：株式会社〇〇">
+        <!-- ケース -->
+        <fieldset>
+            <legend>ケース</legend>
+            <div class="form-group">
+                <label for="subject">②件名</label>
+                <input type="text" id="subject" placeholder="件名を入力">
+            </div>
+            <div class="form-group">
+                <label for="source">③発生源</label>
+                <select id="source">
+                    <option value="">選択してください</option>
+                    <option value="電話">電話</option>
+                    <option value="遠隔システム">遠隔システム</option>
+                    <option value="予測・予防保全">予測・予防保全</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="product">④受付商材</label>
+                <select id="product">
+                    <option value="">選択してください</option>
+                    <option value="CGS">CGS</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="agent">⑤受付対応者</label>
+                <input type="text" id="agent" placeholder="受付対応者を入力">
+            </div>
+            <div class="form-group">
+                <label for="failure_date">⑥故障発生日、時間</label>
+                <input type="datetime-local" id="failure_date">
+            </div>
+            <div class="form-group">
+                <label for="category">⑦問合せ分類</label>
+                <select id="category">
+                    <option value="">選択してください</option>
+                    <option value="修理・点検">修理・点検</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="details">⑧問合せ内容</label>
+                <textarea id="details" placeholder="問合せ内容を入力"></textarea>
+            </div>
+            <div class="form-group">
+                <label for="account">⑨取引先</label>
+                <input type="text" id="account" placeholder="取引先を入力">
+            </div>
+            <div class="form-group">
+                <label for="response_action">⑩対応内容</label>
+                <select id="response_action">
+                    <option value="">選択してください</option>
+                    <option value="対応引継ぎ">対応引継ぎ</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="handover">⑪引継ぎ先</label>
+                <select id="handover">
+                    <option value="">選択してください</option>
+                    <option value="CF部兵庫G">CF部兵庫G</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="visit_date">⑫訪問希望日、時間</label>
+                <input type="datetime-local" id="visit_date">
+            </div>
+            <div class="form-group">
+                <label for="equip_info">⑬機器情報</label>
+                <input type="text" id="equip_info" placeholder="機器情報を入力">
+            </div>
+        </fieldset>
 
-    <label for="details">④ 詳細・備考（任意）</label>
-    <textarea id="details" rows="5" placeholder="補足事項があれば入力してください..."></textarea>
+        <!-- 作業指示 -->
+        <fieldset>
+            <legend>作業指示</legend>
+            <div class="form-group">
+                <label for="territory">⑭サービステリトリー</label>
+                <select id="territory">
+                    <option value="">選択してください</option>
+                    <option value="CGS2T　兵庫">CGS2T　兵庫</option>
+                    <option value="鴻池運輸　兵庫">鴻池運輸　兵庫</option>
+                    <option value="OGFA　CGS2T兵庫">OGFA　CGS2T兵庫</option>
+                    <option value="OGFA　CGS1T大阪">OGFA　CGS1T大阪</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="work_code">⑮業務内容コード</label>
+                <select id="work_code">
+                    <option value="">選択してください</option>
+                    <option value="01:故障対応">01:故障対応</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="sudden_planned">十六突発か計画か・・・</label>
+                <select id="sudden_planned">
+                    <option value="">選択してください</option>
+                    <option value="突発">突発</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="which_equip">⑰どの機器か・・・</label>
+                <select id="which_equip">
+                    <option value="">選択してください</option>
+                    <option value="CGS">CGS</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="work_order">⑱作業指示</label>
+                <select id="work_order">
+                    <option value="">選択してください</option>
+                    <option value="CGS）突発メンテナンス">CGS）突発メンテナンス</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="maintenance_person">⑲メンテ担当者</label>
+                <input type="text" id="maintenance_person" placeholder="メンテ担当者を入力">
+            </div>
+        </fieldset>
 
-    <!-- 一番下に配置した「メール送付」ボタン -->
-    <button class="submit-button" onclick="createMail()">メール送付</button>
+        <div class="btn-container">
+            <button type="button" onclick="generateMail()">メールを起動して送信準備</button>
+        </div>
+    </form>
 </div>
 
 <script>
-    function createMail() {
-        // 1. フォームの値を取得
-        const subject = document.getElementById('subject').value;
-        const occurrenceDate = document.getElementById('occurrence_date').value;
-        const contractor = document.getElementById('contractor').value;
-        const details = document.getElementById('details').value;
-
-        // 2. メールの本文を組み立てる
-        let mailBody = `【発生日】\n${occurrenceDate}\n\n`;
-        mailBody += `【委託先】\n${contractor}\n\n`;
+    function generateMail() {
+        // 各項目の値を取得
+        const v = (id) => document.getElementById(id).value;
         
-        if (details) {
-            mailBody += `【詳細・備考】\n${details}\n`;
-        }
+        // テキスト化（フォーマット）
+        let mailBody = "【顧客選択】\n";
+        mailBody += `①顧客名: ${v('customer_name')}\n\n`;
+        
+        mailBody += "【ケース】\n";
+        mailBody += `②件名: ${v('subject')}\n`;
+        mailBody += `③発生源: ${v('source')}\n`;
+        mailBody += `④受付商材: ${v('product')}\n`;
+        mailBody += `⑤受付対応者: ${v('agent')}\n`;
+        mailBody += `⑥故障発生日、時間: ${v('failure_date').replace('T', ' ')}\n`;
+        mailBody += `⑦問合せ分類: ${v('category')}\n`;
+        mailBody += `⑧問合せ内容:\n${v('details')}\n`;
+        mailBody += `⑨取引先: ${v('account')}\n`;
+        mailBody += `⑩対応内容: ${v('response_action')}\n`;
+        mailBody += `⑪引継ぎ先: ${v('handover')}\n`;
+        mailBody += `⑫訪問希望日、時間: ${v('visit_date').replace('T', ' ')}\n`;
+        mailBody += `⑬機器情報: ${v('equip_info')}\n\n`;
+        
+        mailBody += "【作業指示】\n";
+        mailBody += `⑭サービステリトリー: ${v('territory')}\n`;
+        mailBody += `⑮業務内容コード: ${v('work_code')}\n`;
+        mailBody += `⑯突発か計画か・・・: ${v('sudden_planned')}\n`;
+        mailBody += `⑰どの機器か・・・: ${v('which_equip')}\n`;
+        mailBody += `⑱作業指示: ${v('work_order')}\n`;
+        mailBody += `⑲メンテ担当者: ${v('maintenance_person')}\n`;
 
-        // 3. 文字化け防止のためにエンコード
-        const encodedSubject = encodeURIComponent(subject);
+        // URLエンコードしてmailtoリンクを作成
         const encodedBody = encodeURIComponent(mailBody);
-
-        // 4. 送付先はブランク（mailto: の後ろを空欄）でメールアプリを起動
-        const mailtoLink = `mailto:?subject=${encodedSubject}&body=${encodedBody}`;
+        const mailtoLink = `mailto:?subject=${encodeURIComponent('Salesforce 入力データ')}&body=${encodedBody}`;
+        
+        // メールアプリを起動
         window.location.href = mailtoLink;
     }
 </script>
