@@ -4,6 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Salesforce 入力フォーム</title>
+    
+    <!-- カレンダー・時計表示用の外部機能（Flatpickr）を読み込み -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/ja.js"></script>
+
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -48,8 +54,8 @@
             flex: 0 0 200px;
             font-weight: bold;
         }
+        /* 入力項目のスタイル */
         .form-group input[type="text"],
-        .form-group input[type="datetime-local"],
         .form-group select,
         .form-group textarea {
             flex: 1;
@@ -57,6 +63,24 @@
             border: 1px solid #ccc;
             border-radius: 4px;
             box-sizing: border-box;
+            background-color: #fff;
+        }
+        /* 日付と時間を並べるためのラッパー */
+        .datetime-wrapper {
+            display: flex;
+            flex: 1;
+            gap: 10px;
+        }
+        .datetime-wrapper input {
+            flex: 1;
+            cursor: pointer; /* クリックできることを強調 */
+        }
+        /* 固定表示項目のスタイル */
+        .form-group input[readonly]:not(.date-picker):not(.time-picker) {
+            background-color: #e9ecef;
+            cursor: not-allowed;
+            color: #555;
+            font-weight: bold;
         }
         .form-group textarea {
             resize: vertical;
@@ -114,25 +138,24 @@
             </div>
             <div class="form-group">
                 <label for="product">④受付商材</label>
-                <select id="product">
-                    <option value="">選択してください</option>
-                    <option value="CGS">CGS</option>
-                </select>
+                <input type="text" id="product" value="CGS" readonly>
             </div>
             <div class="form-group">
                 <label for="agent">⑤受付対応者</label>
                 <input type="text" id="agent" placeholder="受付対応者を入力">
             </div>
             <div class="form-group">
-                <label for="failure_date">⑥故障発生日、時間</label>
-                <input type="datetime-local" id="failure_date">
+                <label>⑥故障発生日、時間</label>
+                <div class="datetime-wrapper">
+                    <!-- class="date-picker"でカレンダーを呼び出し -->
+                    <input type="text" id="failure_date_d" class="date-picker" placeholder="カレンダーから日付を選択" readonly>
+                    <!-- class="time-picker"で時計を呼び出し -->
+                    <input type="text" id="failure_date_t" class="time-picker" placeholder="時計から時間を選択" readonly>
+                </div>
             </div>
             <div class="form-group">
                 <label for="category">⑦問合せ分類</label>
-                <select id="category">
-                    <option value="">選択してください</option>
-                    <option value="修理・点検">修理・点検</option>
-                </select>
+                <input type="text" id="category" value="修理・点検" readonly>
             </div>
             <div class="form-group">
                 <label for="details">⑧問合せ内容</label>
@@ -144,21 +167,18 @@
             </div>
             <div class="form-group">
                 <label for="response_action">⑩対応内容</label>
-                <select id="response_action">
-                    <option value="">選択してください</option>
-                    <option value="対応引継ぎ">対応引継ぎ</option>
-                </select>
+                <input type="text" id="response_action" value="対応引継ぎ" readonly>
             </div>
             <div class="form-group">
                 <label for="handover">⑪引継ぎ先</label>
-                <select id="handover">
-                    <option value="">選択してください</option>
-                    <option value="CF部兵庫G">CF部兵庫G</option>
-                </select>
+                <input type="text" id="handover" value="CF部兵庫G" readonly>
             </div>
             <div class="form-group">
-                <label for="visit_date">⑫訪問希望日、時間</label>
-                <input type="datetime-local" id="visit_date">
+                <label>⑫訪問希望日、時間</label>
+                <div class="datetime-wrapper">
+                    <input type="text" id="visit_date_d" class="date-picker" placeholder="カレンダーから日付を選択" readonly>
+                    <input type="text" id="visit_date_t" class="time-picker" placeholder="時計から時間を選択" readonly>
+                </div>
             </div>
             <div class="form-group">
                 <label for="equip_info">⑬機器情報</label>
@@ -181,31 +201,19 @@
             </div>
             <div class="form-group">
                 <label for="work_code">⑮業務内容コード</label>
-                <select id="work_code">
-                    <option value="">選択してください</option>
-                    <option value="01:故障対応">01:故障対応</option>
-                </select>
+                <input type="text" id="work_code" value="01:故障対応" readonly>
             </div>
             <div class="form-group">
-                <label for="sudden_planned">十六突発か計画か・・・</label>
-                <select id="sudden_planned">
-                    <option value="">選択してください</option>
-                    <option value="突発">突発</option>
-                </select>
+                <label for="sudden_planned">⑯突発か計画か・・・</label>
+                <input type="text" id="sudden_planned" value="突発" readonly>
             </div>
             <div class="form-group">
                 <label for="which_equip">⑰どの機器か・・・</label>
-                <select id="which_equip">
-                    <option value="">選択してください</option>
-                    <option value="CGS">CGS</option>
-                </select>
+                <input type="text" id="which_equip" value="CGS" readonly>
             </div>
             <div class="form-group">
                 <label for="work_order">⑱作業指示</label>
-                <select id="work_order">
-                    <option value="">選択してください</option>
-                    <option value="CGS）突発メンテナンス">CGS）突発メンテナンス</option>
-                </select>
+                <input type="text" id="work_order" value="CGS）突発メンテナンス" readonly>
             </div>
             <div class="form-group">
                 <label for="maintenance_person">⑲メンテ担当者</label>
@@ -220,9 +228,41 @@
 </div>
 
 <script>
+    // カレンダーと時計の設定（Flatpickrの初期化）
+    document.addEventListener('DOMContentLoaded', function() {
+        // カレンダーの設定
+        flatpickr(".date-picker", {
+            locale: "ja", // 日本語化
+            dateFormat: "Y/m/d", // 表示形式（年/月/日）
+            allowInput: true
+        });
+
+        // 時計の設定
+        flatpickr(".time-picker", {
+            enableTime: true, // 時間選択を有効化
+            noCalendar: true, // カレンダーは非表示
+            dateFormat: "H:i", // 表示形式（時:分）
+            time_24hr: true, // 24時間表記
+            allowInput: true
+        });
+    });
+
+    // メール起動処理
     function generateMail() {
-        // 各項目の値を取得
         const v = (id) => document.getElementById(id).value;
+        
+        // 日付と時間を結合して整形する処理
+        const formatDateTime = (dateId, timeId) => {
+            const d = v(dateId);
+            const t = v(timeId);
+            if (d && t) return `${d} ${t}`;
+            if (d) return d;
+            if (t) return t;
+            return "";
+        };
+
+        const failure_dt = formatDateTime('failure_date_d', 'failure_date_t');
+        const visit_dt = formatDateTime('visit_date_d', 'visit_date_t');
         
         // テキスト化（フォーマット）
         let mailBody = "【顧客選択】\n";
@@ -233,13 +273,13 @@
         mailBody += `③発生源: ${v('source')}\n`;
         mailBody += `④受付商材: ${v('product')}\n`;
         mailBody += `⑤受付対応者: ${v('agent')}\n`;
-        mailBody += `⑥故障発生日、時間: ${v('failure_date').replace('T', ' ')}\n`;
+        mailBody += `⑥故障発生日、時間: ${failure_dt}\n`;
         mailBody += `⑦問合せ分類: ${v('category')}\n`;
         mailBody += `⑧問合せ内容:\n${v('details')}\n`;
         mailBody += `⑨取引先: ${v('account')}\n`;
         mailBody += `⑩対応内容: ${v('response_action')}\n`;
         mailBody += `⑪引継ぎ先: ${v('handover')}\n`;
-        mailBody += `⑫訪問希望日、時間: ${v('visit_date').replace('T', ' ')}\n`;
+        mailBody += `⑫訪問希望日、時間: ${visit_dt}\n`;
         mailBody += `⑬機器情報: ${v('equip_info')}\n\n`;
         
         mailBody += "【作業指示】\n";
